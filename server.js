@@ -9,11 +9,11 @@ const port = 3000
 
 let database = [
     {
-        title: 'one',
+        title: 'Harry Potter',
         nrOfPages: 500
     },
     {
-        title: 'two',
+        title: 'The Lord of the Rings',
         nrOfPages: 900
     },
 ]
@@ -62,7 +62,11 @@ app.prepare()
             //app.render(req, res, actualPage)
         })
 
+        server.get('/api/edit', (req, res) => {
+        })
+
         server.get('*', (req, res) => {
+            console.log('asd'+req.url)
             return handle(req, res)
         })
 
