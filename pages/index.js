@@ -14,7 +14,7 @@ export default class extends React.Component {
     }
 
     componentDidMount() {
-        fetch('/getDatabase')
+        fetch('api/getDatabase')
             .then( response => response.json() )
             .then( json => this.setState({ database: json}))
     }
@@ -31,14 +31,48 @@ export default class extends React.Component {
         })
     }
 
+    addBook = (event) => {
+        const obj = JSON.parse(event.target.value)
+        fetch(`/api/add?title=${obj.title}&nrOfPages=${obj.nrOfPages}`)
+            .then( response => response.json() )    
+            .then( json => {
+                if(json.status === 200) {
+                    let newDatabase = this.state.database
+                    newDatabase.push({
+                        title: json.title,
+                        nrOfPages: json.nrOfPages
+                    })
+                    this.setState({
+                        database: newDatabase
+                    })
+                }
+            })
+    }
+
+    deleteBook = (event) => {
+        fetch(`/api/delete?title=${event.target.value}`)
+            .then( response => response.json())
+            .then(json => {
+                if(json.status === 200) {
+                    let newDatabase = this.state.database.filter(x => x.title !== json.title)
+                    this.setState({
+                        database: newDatabase
+                    })
+                }
+            })
+    }
+        
+        // if json status success
+        // this.setState(state minus det borttagna elementet) // filter
+        //set state - visa att man har klickat
+        //fetch('/api?mode=delete&id=5').then ta bort elementet ur state
     render() {
+
 
         let list = this.state.database.map(x => (
             <li key={x.title}>
                 {x.title + " "+ x.nrOfPages}
-                <Link href={`/delete/?title=${x.title}`}>
-                    <button value={x.title}>Delete</button>
-                </Link>
+                <button onClick={this.deleteBook} value={x.title}>Delete</button>
             </li>
         ))
 
@@ -48,9 +82,7 @@ export default class extends React.Component {
                 <div>
                     <input onChange={this.onChangeTitle} type="text" placeholder="Title"/>
                     <input onChange={this.onChangeNrOfPages} type="text" placeholder="Number of pages"/>
-                    <Link href={`/api?title=${this.state.title}&nrOfPages=${this.state.nrOfPages}`} >
-                        <button>Add book to database</button>
-                    </Link>
+                    <button onClick={this.addBook} value={JSON.stringify({title: this.state.title, nrOfPages: this.state.nrOfPages})} >Add book to database</button>
                 </div>
 
                 <div>
@@ -62,4 +94,4 @@ export default class extends React.Component {
         )
     }
 
-} 
+}

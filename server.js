@@ -9,11 +9,11 @@ const port = 3000
 
 let database = [
     {
-        title: 'Harry Potter',
+        title: 'one',
         nrOfPages: 500
     },
     {
-        title: 'The Lord of the Rings',
+        title: 'two',
         nrOfPages: 900
     },
 ]
@@ -22,12 +22,12 @@ app.prepare()
     .then(() => {
         const server = express()
 
-        server.get('/getDatabase', (req ,res) => {
+        server.get('/api/getDatabase', (req ,res) => {
             res.write(JSON.stringify(database))
             res.end()
         })
 
-        server.get('/api', (req, res) => {
+        server.get('/api/add', (req, res) => {
             const actualPage = '/';
 
             database.push({
@@ -35,10 +35,16 @@ app.prepare()
                 nrOfPages: req.query.nrOfPages
             })
 
-            app.render(req, res, actualPage)
+            res.send({
+                title: req.query.title,
+                nrOfPages: req.query.nrOfPages,
+                status: 200
+            })
+            res.end()
+            // app.render(req, res, actualPage)
         })
 
-        server.get('/delete', (req, res) => {
+        server.get('/api/delete', (req, res) => {
             const actualPage = '/';
 
             for(let i = 0; i < database.length; i++) {
@@ -47,7 +53,13 @@ app.prepare()
                 }
             }
 
-            app.render(req, res, actualPage)
+            res.send({
+                title: req.query.title,
+                status: 200
+            })
+            res.end()
+
+            //app.render(req, res, actualPage)
         })
 
         server.get('*', (req, res) => {
