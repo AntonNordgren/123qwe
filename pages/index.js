@@ -1,5 +1,5 @@
 
-import Link from 'next/link'
+import Item from '../components/Item.js'
 
 export default class extends React.Component {
 
@@ -9,7 +9,8 @@ export default class extends React.Component {
             database: [],
             title: '',
             nrOfPages: '',
-            deleteButton: ''
+            deleteButton: '',
+            idCounter: 2
         }
     }
 
@@ -40,7 +41,8 @@ export default class extends React.Component {
                     let newDatabase = this.state.database
                     newDatabase.push({
                         title: json.title,
-                        nrOfPages: json.nrOfPages
+                        nrOfPages: json.nrOfPages,
+                        id: json.id
                     })
                     this.setState({
                         database: newDatabase
@@ -49,6 +51,7 @@ export default class extends React.Component {
             })
     }
 
+    /*
     deleteBook = (event) => {
         fetch(`/api/delete?title=${event.target.value}`)
             .then(response => response.json())
@@ -61,7 +64,9 @@ export default class extends React.Component {
                 }
             })
     }
+    */
 
+    /*
     updateBook = (event) => {
         const obj = JSON.parse(event.target.value)
         fetch(`/api/edit?title=${obj.title}&nrOfPages=${obj.nrOfPages}`)
@@ -75,26 +80,39 @@ export default class extends React.Component {
                 }
             })
     }
+    */
+
+    deleteCallback = (data) => {
+        console.log('Called in index:', data)
+        fetch(`/api/delete?title=${data.title}`)
+            .then(response => response.json())
+            .then(json => {
+                if (json.status === 200) {
+                    let newDatabase = this.state.database.filter(x => x.title !== json.title)
+                    this.setState({
+                        database: newDatabase
+                    })
+                }
+            })
+    }
+
+    editCallback = (data) => {
+        console.log('Called in index: edit')
+        fetch(`/api/edit?title=${data.title}&nrOfPages=${data.nrOfPages}&id=${data.id}`)
+        .then(response => response.json())
+        .then(json => {
+            if(json.status === 200) {
+            }
+        })
+    }
 
     render() {
 
         let list = this.state.database.map(x => (
             <li key={x.title}>
-                {x.title + " " + x.nrOfPages}
-                <input type="text" placeholder="New Title" />
-                <input type="text" placeholder="New Number of Pages" />
-                <button onClick={this.editBook} value={x.title}>Update</button>
-                <button onClick={this.deleteBook} value={x.title}>Delete</button>
+                <Item title={x.title} nrOfPages={x.nrOfPages} deleteCallback={this.deleteCallback} editCallback={this.editCallback} id={x.id}/>
             </li>
         ))
-        
-        /*
-        < div className = "editDiv" >
-            <input id={x.name + 'Title'} type="text" placeholder="Title" />
-            <input id={x.name + 'NrOfPages'} type="text" placeholder="Number of pages" />
-            <button onClick={this.updateBook} value={x.name}>Update</button>
-        </div >
-        */
 
         return (
             <div>
@@ -102,7 +120,9 @@ export default class extends React.Component {
                 <div>
                     <input onChange={this.onChangeTitle} type="text" placeholder="Title" />
                     <input onChange={this.onChangeNrOfPages} type="text" placeholder="Number of pages" />
-                    <button onClick={this.addBook} value={JSON.stringify({ title: this.state.title, nrOfPages: this.state.nrOfPages })} >Add book to database</button>
+                    <button onClick={this.addBook} value={JSON.stringify(
+                        { title: this.state.title, nrOfPages: this.state.nrOfPages, id: this.state.id }
+                    )} >Add book to database</button>
                 </div>
 
                 <div>
