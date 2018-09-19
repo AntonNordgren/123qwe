@@ -7,18 +7,20 @@ const app = next({ dev })
 const handle = app.getRequestHandler()
 const port = 3000
 
+const uniqid = require('uniqid');
+
 let idCounter = 2
 
 let database = [
     {
         title: 'Harry Potter',
         nrOfPages: 500,
-        id: 1
+        id: uniqid()
     },
     {
         title: 'The Lord of the Rings',
         nrOfPages: 900,
-        id: 2
+        id: uniqid()
     },
 ]
 
@@ -34,18 +36,18 @@ app.prepare()
         server.get('/api/add', (req, res) => {
             const actualPage = '/';
 
-            idCounter++
+            let id = uniqid()
 
             database.push({
                 title: req.query.title,
                 nrOfPages: req.query.nrOfPages,
-                id: idCounter
+                id: id
             })
 
             res.send({
                 title: req.query.title,
                 nrOfPages: req.query.nrOfPages,
-                id: idCounter,
+                id: id,
                 status: 200
             })
             res.end()
@@ -55,13 +57,13 @@ app.prepare()
             const actualPage = '/';
 
             for(let i = 0; i < database.length; i++) {
-                if(database[i].title === req.query.title) {
+                if(database[i].id === req.query.id) {
                     database.splice(i, 1)
                 }
             }
 
             res.send({
-                title: req.query.title,
+                id: req.query.id,
                 status: 200
             })
             res.end()
@@ -85,8 +87,8 @@ app.prepare()
             console.log('database after ' + JSON.stringify(database))
 
             res.send({
-                newTitle: req.query.title,
-                newNrOfPages: req.query.nrOfPages,
+                title: req.query.title,
+                nrOfPages: req.query.nrOfPages,
                 id: req.query.id,
                 status: 200
             })

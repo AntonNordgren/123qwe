@@ -29,7 +29,7 @@ export default class extends React.Component {
     }
 
     handleDeleteCallback = () => {
-        this.props.deleteCallback({ title: this.state.title })
+        this.props.deleteCallback({ title: this.state.id })
     }
 
     handleEditCallback = (event) => {

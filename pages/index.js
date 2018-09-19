@@ -39,6 +39,7 @@ export default class extends React.Component {
             .then(json => {
                 if (json.status === 200) {
                     let newDatabase = this.state.database
+                    console.log(newDatabase)
                     newDatabase.push({
                         title: json.title,
                         nrOfPages: json.nrOfPages,
@@ -51,44 +52,12 @@ export default class extends React.Component {
             })
     }
 
-    /*
-    deleteBook = (event) => {
-        fetch(`/api/delete?title=${event.target.value}`)
-            .then(response => response.json())
-            .then(json => {
-                if (json.status === 200) {
-                    let newDatabase = this.state.database.filter(x => x.title !== json.title)
-                    this.setState({
-                        database: newDatabase
-                    })
-                }
-            })
-    }
-    */
-
-    /*
-    updateBook = (event) => {
-        const obj = JSON.parse(event.target.value)
-        fetch(`/api/edit?title=${obj.title}&nrOfPages=${obj.nrOfPages}`)
-            .then(response => response.json())
-            .then(json => {
-                if (json.status === 200) {
-                    let newDatabase = this.state.database.filter(x => x.title !== json.title)
-                    this.setState({
-                        database: newDatabase
-                    })
-                }
-            })
-    }
-    */
-
     deleteCallback = (data) => {
-        console.log('Called in index:', data)
-        fetch(`/api/delete?title=${data.title}`)
+        fetch(`/api/delete?id=${data.title}`)
             .then(response => response.json())
             .then(json => {
                 if (json.status === 200) {
-                    let newDatabase = this.state.database.filter(x => x.title !== json.title)
+                    let newDatabase = this.state.database.filter(x => x.id !== json.id)
                     this.setState({
                         database: newDatabase
                     })
@@ -102,6 +71,24 @@ export default class extends React.Component {
         .then(response => response.json())
         .then(json => {
             if(json.status === 200) {
+
+                let newDatabase = this.state.database
+
+                let newItem = {
+                    title: json.title,
+                    nrOfPages: json.nrOfPages,
+                    id: json.id
+                }
+
+                for(let i = 0; i < newDatabase.length; i++) {
+                    if(newDatabase[i].id == json.id) {
+                        newDatabase[i] = newItem
+                    }
+                }
+
+                this.setState({
+                    database: newDatabase
+                })
             }
         })
     }
